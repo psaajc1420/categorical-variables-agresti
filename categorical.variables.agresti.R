@@ -3,7 +3,7 @@ rm(list = ls())
 cat("\014")
 
 # Set the working directory
-setwd("/home/jacob/Documents")
+# setwd("/home/jacob/Documents")
 
 library(ggplot2)
 
@@ -37,3 +37,30 @@ proportion <- 0.9
 test.statisitc <- 1.96
 
 find.null.hypothesis.parameter(trials, proportion, test.statisitc)
+
+
+
+# Wald, Score, and Likelihood-Ratio Inference
+z.statistic <- function(beta.hat, beta.naught, standard.error) { 
+  (beta.hat - beta.naught)/standard.error 
+}
+
+wald.test <- function(p, pi, n) { 
+  standard.error <- sqrt(p*(1-p)/n) 
+  1-pchisq(z.statistic(p, pi, standard.error)^2, df=1)
+}
+
+score.test <- function(p, pi, n) {
+  null.standard.error <- sqrt(pi*(1-pi)/n)
+  1-pchisq(z.statistic(p, pi, null.standard.error)^2, df=1)
+}
+
+likelihood.ratio.test <- function(x, pi, n) {
+  l0 <- dbinom(x, n, pi)
+  l1 <- dbinom(x, n, x/n)
+  -2*log(l0/l1)
+}
+
+wald.test(0.9, 0.5, 10)
+score.test(0.9, 0.5, 10)
+likelihood.ratio.test(9, 0.5, 10)
