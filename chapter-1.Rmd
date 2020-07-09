@@ -1,0 +1,101 @@
+---
+title: "Chapter-1"
+author: "Jacob Cadena"
+date: "7/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# clearing the screen and work environment
+rm(list = ls())
+cat("\014")
+
+library(ggplot2)
+```
+
+
+```{r}
+
+n <- 10
+y <- seq(0, 10, by=1)
+
+df <- data.frame(y,
+                 two.success = dbinom(y, n, 0.2),
+                 five.success = dbinom(y, n, 0.5),
+                 eight.success = dbinom(y, n, 0.8))
+
+col.names <- c("y", 
+               "P(y) when pi = 0.20", 
+               "P(y) when pi = 0.50",
+               "P(y) when pi = 0.80")
+knitr::kable(df, col.names = col.names)
+```
+
+```{r}
+
+prob.of.success <- seq(0, 1, by = 0.01)
+trials <- 10
+
+df <- data.frame(prob.of.success,
+                 zero.success = dbinom(0, trials, prob.of.success),
+                 six.success = dbinom(6, trials, prob.of.success))
+
+
+ggplot(data = df) + 
+  geom_line(mapping = aes(x = prob.of.success, y = zero.success)) + 
+  geom_line(mapping = aes(x = prob.of.success, y = six.success))
+
+quadratic.formula <- function(a, b, c) {
+  discriminant <- sqrt(b^2 - 4*a*c)
+  c((-b - discriminant)/(2*a), (-b + discriminant)/(2*a))
+}
+
+find.null.hypothesis.parameter <- function(trials, proportion, 
+                                           test.statisitc) {
+  a <- (1 + test.statisitc^2/trials)
+  b <- (-2*proportion - test.statisitc^2/trials)
+  c <- (proportion^2)
+  quadratic.formula(a,b,c)
+}
+
+trials <- 10
+proportion <- 0.9 
+test.statisitc <- 1.96
+
+find.null.hypothesis.parameter(trials, proportion, test.statisitc)
+
+
+
+# Wald, Score, and Likelihood-Ratio Inference
+z.statistic <- function(beta.hat, beta.naught, standard.error) { 
+  (beta.hat - beta.naught)/standard.error 
+}
+
+wald.test <- function(p, pi, n) { 
+  standard.error <- sqrt(p*(1-p)/n) 
+  1-pchisq(z.statistic(p, pi, standard.error)^2, df=1)
+}
+
+score.test <- function(p, pi, n) {
+  null.standard.error <- sqrt(pi*(1-pi)/n)
+  1-pchisq(z.statistic(p, pi, null.standard.error)^2, df=1)
+}
+
+likelihood.ratio.test <- function(x, pi, n) {
+  l0 <- dbinom(x, n, pi)
+  l1 <- dbinom(x, n, x/n)
+  -2*log(l0/l1)
+}
+
+wald.test(0.9, 0.5, 10)
+score.test(0.9, 0.5, 10)
+likelihood.ratio.test(9, 0.5, 10)
+```
+
+
+
+
