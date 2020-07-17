@@ -15,6 +15,7 @@ rm(list = ls())
 cat("\014")
 
 library(ggplot2)
+library(latex2exp)
 ```
 
 
@@ -28,10 +29,10 @@ df <- data.frame(y,
                  five.success = dbinom(y, n, 0.5),
                  eight.success = dbinom(y, n, 0.8))
 
-col.names <- c("y", 
-               "P(y) when pi = 0.20", 
-               "P(y) when pi = 0.50",
-               "P(y) when pi = 0.80")
+col.names <- c("y",
+               "P(y) when $\\pi$ = 0.20", 
+               "P(y) when $\\pi$ = 0.50",
+               "P(y) when $\\pi$ = 0.80")
 knitr::kable(df, col.names = col.names)
 ```
 
